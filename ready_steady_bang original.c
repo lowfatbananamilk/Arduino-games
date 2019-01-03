@@ -1,26 +1,17 @@
 #include "pitches.h"
-static int win[] = {NOTE_A5, NOTE_B5, NOTE_C5, NOTE_B5, NOTE_C5, NOTE_D5, NOTE_C5, NOTE_D5,
+const int win[] = {NOTE_A5, NOTE_B5, NOTE_C5, NOTE_B5, NOTE_C5, NOTE_D5, NOTE_C5, NOTE_D5,
                     NOTE_E5, NOTE_D5, NOTE_E5, NOTE_E5};
 
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
-int p1pin = 6, p2pin = 7, piezo = 8, vr = 9, setting = 10;
+int BLUE = 6, GREEN = 7, piezo = 8, vr = 9, setting = 10;
 
 int p1stat, p2stat, p1win = 0, p2win = 0;
 unsigned long start, current, p1time, p2time, timer;
 
-void setup() {
-  for (int i = 6; i <= 8; i++)
-    pinMode(i, OUTPUT);
-
-  lcd.begin(16, 2);
-
-  Serial.begin(9600);
-  Serial.println("Ready Steady BANG!! ver 2.0");
-}
-
-void loop() {  
+void intro() {
+  lcd.clear();
   lcd.print("Ready");
   tone(piezo, NOTE_A5); delay(125);
   tone(piezo, NOTE_D6); delay(125);
@@ -43,9 +34,10 @@ void loop() {
   
   tone(piezo, NOTE_D5); delay(375);
   noTone(piezo); delay(1625); //4sec
+}
 
-  while(1) {
-    Serial.println("");
+void game() { 
+  while(true) {
     lcd.clear();
     p1stat = false;
     p2stat = false;
@@ -56,21 +48,19 @@ void loop() {
     lcd.blink();
   
     while(!p1stat || !p2stat) {
-      if (digitalRead(p1pin) && !p1stat) {
+      if (digitalRead(BLUE) && !p1stat) {
         p1stat = true;
         lcd.setCursor(12, 1);
         lcd.print("P1");
         lcd.setCursor(10, 1);
         tone(piezo, NOTE_G6, 500);
-        Serial.println("P1 Ready");
       }
-      if (digitalRead(p2pin) && !p2stat) {
+      if (digitalRead(GREEN) && !p2stat) {
         p2stat = true;
         lcd.setCursor(14, 1);
         lcd.print("P2");
         lcd.setCursor(10, 1);
         tone(piezo, NOTE_G6, 500);
-        Serial.println("P2 Ready");
       }
       /*
       //SETTINGS
@@ -83,7 +73,6 @@ void loop() {
      }
      */
     }
-    Serial.println("Game Start\n");
     delay(1000);
     
     lcd.clear();
@@ -91,11 +80,6 @@ void loop() {
     p2stat = false;
 
     timer = random(6000);
-    Serial.print("The time will be ");
-    Serial.print(timer / 1000);
-    Serial.print(".");
-    Serial.print(timer % 1000);
-    Serial.println("s.\n");
     
     lcd.print("Ready");
     tone(piezo, NOTE_C5, 500);
@@ -110,7 +94,6 @@ void loop() {
     lcd.print("BANG!!");
     start = millis();
     tone(piezo, NOTE_G5, 500);
-    Serial.println("BANG!!");
 
     while (!p1stat || !p2stat) {
       current = millis();
@@ -119,37 +102,23 @@ void loop() {
       lcd.print("time: ");
       lcd.print(current - start);
 
-      if (digitalRead(p1pin) && !p1stat) {
+      if (digitalRead(BLUE) && !p1stat) {
         p1time = current - start;
         p1stat = true;
-        
-        Serial.print("P1 time: ");
-        Serial.print(p1time);
-        Serial.println("ms.");
       }
 
-      if (digitalRead(p2pin) && !p2stat) {
+      if (digitalRead(GREEN) && !p2stat) {
         p2time = current - start;
         p2stat = true;
-        
-        Serial.print("P2 time: ");
-        Serial.print(p2time);
-        Serial.println("ms.");
       }
     }  
 
     if (p1time < p2time) {
-      Serial.println("\nP1 won!");
       p1win++;
     }
     else {
-      Serial.println("\nP2 won!");
       p2win++;
     }
-    Serial.println("P1 : P2 ");
-    Serial.print(p1win);
-    Serial.print(" : ");
-    Serial.println(p2win);
         
     lcd.noBlink();
     delay(2000);
