@@ -21,8 +21,8 @@ It also requires `pitches.h`. You should be able to find it in the repository.
 It also uses the same wiring as the current project.
 ***
 
-To-Do list
-+ ~~Upload "Ready. Steady. BANG!"~~
-+ Make a list of games to make
-+ ~~Make selection interface~~
-+ Remake "Ready Steady BANG" to be loaded in main.ino
+To-Do list: RSB
++ Add penalty when a player shoots too early
++ Add ability to quit the game
++ New play() function that uses `tone(PIZO, pitch, length);` method
++ Add one-player mode
