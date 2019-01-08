@@ -24,5 +24,5 @@ It also uses the same wiring as the current project.
 To-Do list
 + ~~Upload "Ready. Steady. BANG!"~~
 + Make a list of games to make
-+ Create main.ino and make selection interface
++ ~~Make selection interface~~
 + Remake "Ready Steady BANG" to be loaded in main.ino
