@@ -1,7 +1,10 @@
 # Arduino games
 
-I have an Arduino, and I like games.
-***
-To-Do list
-* Upload "Ready. Steady. BANG!"
-* Make a list of games to make.
+This branch is currently abandoned!
+
+Please take a look and lend me a hand if you can...
+
+I've been trying many things, but I couldn't
+1. allow codes in other file formats rather than `.ino` to use `LiquidCrystal` objects
+2. or PIZO related functions
+because they are only supported in `.ino`
