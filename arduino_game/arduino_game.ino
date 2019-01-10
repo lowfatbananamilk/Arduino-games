@@ -10,7 +10,7 @@ const int BLUE = 6;
 const int GREEN = 7;
 const int WHITE = 8;
 
-const int LIGHT = 13; // Onboard LED
+const int LIGHT = LED_BUILTIN;
 
 // Switches --------------------------------------------
 bool blue;
@@ -79,7 +79,7 @@ public:
     lcd.setCursor(0, 1);
     lcd.print("BANG!");
     lcd.setCursor(12, 1);
-    lcd.print("V2.0");
+    lcd.print("V3.0");
     
     play(introM3, introM3L, 2); // 4sec
     }
@@ -111,24 +111,70 @@ public:
           lcd.setCursor(11, 1);
           tone(PIZO, NOTE_G6, 500);
         }
-      } while (!blue || !green);
-      
-      blue = green = false;
-      timer = random(6000); // Set radomized time - control Max. here
 
+        if(digitalRead(WHITE)) {
+          white = true;
+          return;
+        }
+
+      } while ((!blue || !green));
+      blue = green = false;
+
+      timer = random(6000); // Set radomized time - control Max. here
       delay(1000);
+
+      current = millis();
+
       lcd.clear();
       lcd.print("Ready");
       tone(PIZO, NOTE_C5, 500);
-      delay(2000);
+      do {
+        if (digitalRead(BLUE)) {
+          blue = true;
+
+          lcd.setCursor(0, 1);
+          lcd.print("xP1x");
+        }
+        if (digitalRead(GREEN)) {
+          green = true;
+
+          lcd.setCursor(5, 1);
+          lcd.print("xP2x");
+        }
+      } while(millis() - current < 2000);
       
-      lcd.clear();
+      lcd.home();
       lcd.print("Steady");
       tone(PIZO, NOTE_C5, 500);
-      delay(timer);
+
+      current = millis();
+
+      do {
+        if (digitalRead(BLUE) && !blue) {
+          blue = true;
+
+          lcd.setCursor(0, 1);
+          lcd.print("xP1x");
+        }
+        if (digitalRead(GREEN) && !green) {
+          green = true;
+
+          lcd.setCursor(5, 1);
+          lcd.print("xP2x");
+        }
+      } while (millis() - current < timer);
 
       lcd.clear();
       lcd.print("BANG!!");
+      if (blue) {
+        lcd.setCursor(7, 0);
+        lcd.print("xP1x");
+      }
+      if (green) {
+        lcd.setCursor(12, 0);
+        lcd.print("xP2x");
+      }
+      
       start = millis(); // Start timer
       tone(PIZO, NOTE_G5, 500);
 
@@ -270,9 +316,7 @@ void setup() {
 
 // -----------------------------------------------------
 void loop() {
-  blue = false;
-  green = false;
-  white = false;
+  blue = green = white = false;
   lcd.clear();
 
   lcd.print("Select Game!");
@@ -280,6 +324,8 @@ void loop() {
   lcd.print(title[select]);
 
   do {
+    delay(200);
+
     if (digitalRead(GREEN)) {
       select++;
       green = true;
@@ -294,12 +340,8 @@ void loop() {
     }
     if (digitalRead(WHITE))
       white = true;
-
-    delay(140);
   } while(!blue && !green && !white);
-
-  blue = false;
-  green = false;
+  blue = green = false;
 
   if (white) {
     white = false;
@@ -328,6 +370,8 @@ void loop() {
     game->intro();
     do {
       game -> playGame();
+      if (white)
+        break;
 
       game -> score();
     } while(true); // Program does not pass this line.. yet!
